@@ -1,113 +1,154 @@
-# Médiathèque — Migration Laravel
+# Médiathèque - Application Laravel
 
-Application web de gestion de ressources, migrée vers Laravel dans le cadre d'un brief pédagogique DWWM.
+Application CRUD de gestion de ressources médiathèque développée avec Laravel.
 
----
+## Stack technique
 
-## Prérequis
+- PHP 8.3
+- Laravel 11
+- MySQL
+- Blade (moteur de templates)
 
-- PHP >= 8.1
-- Composer
-- Laravel 10.x
-- Un serveur local type [Laragon](https://laragon.org/) ou équivalent
+## Fonctionnalités
 
----
+- Lister toutes les ressources
+- Afficher le détail d'une ressource
+- Ajouter une ressource
+- Modifier une ressource
+- Supprimer une ressource
+- Validation des formulaires (FormRequest)
+- Messages flash (succès, info)
+- Affichage des erreurs de validation
 
 ## Installation
 
+### Prérequis
+
+- PHP >= 8.2
+- Composer
+- MySQL (XAMPP ou autre)
+- Node.js (optionnel)
+
+### Étapes
+
+1. Cloner le projet
+
 ```bash
-# 1. Cloner le dépôt
-git clone https://github.com/<ton-username>/<ton-repo>.git
-cd <ton-repo>
+git clone https://github.com/ton-repo/LaravelDB.git
+cd LaravelDB
+```
 
-# 2. Installer les dépendances
+2. Installer les dépendances
+
+```bash
 composer install
+```
 
-# 3. Copier le fichier d'environnement
+3. Copier le fichier d'environnement
+
+```bash
 cp .env.example .env
+```
 
-# 4. Générer la clé d'application
+4. Configurer la base de données dans `.env`
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mediatheque_2
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+5. Générer la clé d'application
+
+```bash
 php artisan key:generate
 ```
 
----
+6. Lancer les migrations et le seeder
 
-## Configuration `.env`
-
-Ouvrir le fichier `.env` et vérifier les valeurs suivantes :
-
-```env
-APP_NAME=Mediatheque
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
+```bash
+php artisan migrate:fresh --seed
 ```
 
-> Aucune base de données n'est utilisée dans cette version — les données sont en dur dans le contrôleur.
-
----
-
-## Lancement
+7. Démarrer le serveur
 
 ```bash
 php artisan serve
 ```
 
-L'application est accessible sur : [http://localhost:8000](http://localhost:8000)
+L'application est accessible sur `http://127.0.0.1:8000`.
 
----
-
-## Routes disponibles
-
-| Méthode | URL | Description |
-|--------|-----|-------------|
-| GET | `/resources` | Liste de toutes les ressources |
-| GET | `/resource/{id}` | Détail d'une ressource |
-
----
-
-## Structure MVC
+## Structure du projet
 
 ```
-app/Http/Controllers/
-└── ResourceController.php     ← Contrôleur (index + show)
-
-resources/views/
-├── layouts/
-│   └── app.blade.php          ← Layout commun
-└── resources/
-    ├── index.blade.php        ← Vue liste
-    └── show.blade.php         ← Vue détail
-
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── HomeController.php
+│   │   └── ResourceController.php
+│   └── Requests/
+│       ├── StoreResourceRequest.php
+│       └── UpdateResourceRequest.php
+├── Models/
+│   └── Resource.php
+database/
+├── factories/
+│   └── ResourceFactory.php
+├── migrations/
+│   └── 2026_07_20_115133_create_resources_table.php
+└── seeders/
+    └── DatabaseSeeder.php
+resources/
+└── views/
+    ├── layouts/
+    │   └── app.blade.php
+    └── resources/
+        ├── index.blade.php
+        ├── show.blade.php
+        ├── create.blade.php
+        └── edit.blade.php
 routes/
-└── web.php                    ← Déclaration des routes
+└── web.php
 ```
 
----
+## Routes
 
-## Commandes Artisan utiles
+| Méthode   | URI                      | Action    | Nom                 |
+|-----------|--------------------------|-----------|---------------------|
+| GET       | /resources               | index     | resources.index     |
+| GET       | /resources/create        | create    | resources.create    |
+| POST      | /resources               | store     | resources.store     |
+| GET       | /resources/{resource}    | show      | resources.show      |
+| GET       | /resources/{resource}/edit | edit    | resources.edit      |
+| PUT/PATCH | /resources/{resource}    | update    | resources.update    |
+| DELETE    | /resources/{resource}    | destroy   | resources.destroy   |
 
-```bash
-# Lancer le serveur de développement
-php artisan serve
+## Modèle Resource
 
-# Lister toutes les routes enregistrées
-php artisan route:list
+| Colonne    | Type    | Description              |
+|------------|---------|--------------------------|
+| id         | integer | Clé primaire             |
+| titre      | string  | Titre de la ressource    |
+| type       | string  | Type (livre, dvd, cd...) |
+| statut     | string  | disponible / emprunté    |
+| emprunteur | string  | Nom de l'emprunteur      |
+| created_at | datetime| Date de création         |
+| updated_at | datetime| Date de modification     |
 
-# Générer un contrôleur
-php artisan make:controller NomController
+## Validation
 
-# Vider le cache de configuration
-php artisan config:clear
+Les règles de validation sont définies dans les FormRequest :
 
-# Vider le cache des vues
-php artisan view:clear
-```
+- `titre` : obligatoire, unique, max 255 caractères
+- `type` : obligatoire
+- `statut` : obligatoire
+- `emprunteur` : optionnel
 
----
+## Auteur
 
-## Notes
-
-- Le fichier `.env` n'est pas versionné (présent dans `.gitignore`)
-- Le dossier `vendor/` n'est pas versionné
-- Les données sont statiques (tableau PHP en dur dans le contrôleur), sans base de données
+Semih Sisman - Apprenti développeur DWWM  
+Conseil Départemental du Loir-et-Cher (CD41)  
+La Fabrique Numérique 41 - Blois
