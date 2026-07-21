@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Resource;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +16,49 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+       Resource::truncate();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+       Resource::insert([
+           [
+               'titre'      => 'Dragon Ball Z',
+               'type'       => 'manga',
+               'statut'     => 'disponible',
+               'emprunteur' => null,
+               'created_at' => now(),
+               'updated_at' => now(),
+           ],
+           [
+               'titre'      => 'Le Seigneur des Anneaux',
+               'type'       => 'livre',
+               'statut'     => 'emprunté',
+               'emprunteur' => 'Alice Martin',
+               'created_at' => now(),
+               'updated_at' => now(),
+           ],
+           [
+               'titre'      => 'Inception',
+               'type'       => 'dvd',
+               'statut'     => 'disponible',
+               'emprunteur' => null,
+               'created_at' => now(),
+               'updated_at' => now(),
+           ],
+           [
+               'titre'      => 'Daft Punk - Random Access Memories',
+               'type'       => 'cd',
+               'statut'     => 'emprunté',
+               'emprunteur' => 'Thomas Dupont',
+               'created_at' => now(),
+               'updated_at' => now(),
+           ],
+           [
+               'titre'      => 'National Geographic - Janvier 2025',
+               'type'       => 'magazine',
+               'statut'     => 'disponible',
+               'emprunteur' => null,
+               'created_at' => now(),
+               'updated_at' => now(),
+           ],
+       ]);
     }
 }
